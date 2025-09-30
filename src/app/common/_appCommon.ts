@@ -73,7 +73,8 @@ const EnAdminCoinTransferTypeObjByte: IDicMapping = {
 const EnTransactionStatusObjByte: IDicMapping = {
   "1": "Success",
   "2": "Pending",
-  "3": "Failed",
+  "3": "Under Processing",
+  "4": "Failed",
 }
 
 const EnTransactionTypeObjByte: IDicMapping = {
