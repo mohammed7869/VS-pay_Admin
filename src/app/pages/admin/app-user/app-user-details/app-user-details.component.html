@@ -1,0 +1,61 @@
+<div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{ user.fullName }}</h5>
+      <h6 class="card-subtitle mb-2 mt-2 text-muted">Username: {{ user.username }}</h6>
+      <p class="card-text">Email: {{ user.email }}</p>
+      <p class="card-text">Mobile: {{ user.mobile }}</p>
+      <p class="card-text">Created Date: {{ user.createdDate | date:'short' }}</p>
+      <h5 class="card-text">Wallet Balance: {{ user.walletBalance | number:'1.2-2' }}</h5>
+      <!-- <p class="card-text">Role ID: {{ user.roleId }}</p> -->
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-body">
+  <div class="container mt-4">
+    <h4>Transaction History</h4>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Transaction Date</th>
+          <th>Amount</th>
+          <th>Description</th>
+          <th>Recipient</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let transaction of lst">
+          <td>{{ transaction.id }}</td>
+          <td>{{ transaction.transactionDate | date:'short' }}</td>
+          <td>{{ transaction.amount | number:'1.2-2' }}</td>
+          <td>{{ transaction.description }}</td>
+          <td>{{ transaction.recipientFullName }} ({{ transaction.recipientMobileNo }})</td>
+          <td>
+            <span class="badge" [ngClass]="{ 
+              'badge-success': transaction.status === 1, 
+              'badge-warning': transaction.status === 2,
+              'badge-danger': transaction.status === 3 
+            }">
+              {{ getStatusText(transaction.status) }}
+            </span>
+          </td>
+          <td *ngIf="transaction.status === 2 && transaction.txnType === 2">
+            <button class="btn btn-success btn-sm mr-2" (click)="approveTopUp(transaction.id)">
+              <i class="ri-check-line"></i> Approve
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="rejectTopUp(transaction.id)">
+              <i class="ri-close-line"></i> Reject
+            </button>
+          </td>
+          <td *ngIf="!(transaction.status === 2 && transaction.txnType === 2)">
+            <!-- Empty cell for non-pending topup transactions -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>

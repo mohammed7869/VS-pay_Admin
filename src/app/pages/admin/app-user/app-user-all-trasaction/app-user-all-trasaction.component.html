@@ -1,0 +1,18 @@
+<div class="page-title-box d-flex align-items-center justify-content-between mr-4 ml-4">
+    <h4 class="mb-0">All Transactions</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="javascript: void(0);">All Transactions</a> </li>
+        </ol>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div [ngStyle]="gridHeightWidth" class="mb-2">
+            <ag-grid-angular style="width: 100%; height:100%;" class="ag-theme-alpine" [rowData]="lst"
+                [rowHeight]="appCommon.GridRowHeight" [columnDefs]="columnDefs" (gridReady)="onGridReady($event)"
+                [animateRows]="true">
+            </ag-grid-angular>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+<div class="modal-header">
+    <h5 class="modal-title mt-0">Add New Process Remark</h5>
+    <button type="button" class="close" aria-hidden="true" (click)="passBack()">×</button>
+</div>
+<form (ngSubmit)="submit()" [formGroup]="form" (keydown.enter)="$event.preventDefault()" autocomplete="off">
+    <div class="modal-body">
+        <div class="form-label-group">
+            <input type="text" id="tt2" class="form-control" formControlName="text" placeholder="Text"
+                [ngClass]="submitted && form.controls['text'].hasError('required')?'is-invalid':''" />
+            <label for="tt2">Text<span class="text-danger">*</span></label>
+            <div class="invalid-feedback">
+                <span>This value is required.</span>
+            </div>
+        </div>
+        <div class="form-label-group">
+            <textarea rows="3" class="form-control" formControlName="description" placeholder="Description"></textarea>
+            <label>Description</label>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+
+            </div>
+            <div class="col-md-8">
+
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary btn-sm mr-2 btn-sm">
+            <i class="ri-download-2-line align-middle mr-2"></i>
+            <ng-container *ngIf="isBtnLoading">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait...
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="isBtnLoading ===false">
+                <span class="indicator-label">{{ form.value.id ? 'Update' : 'Submit'
+                    }}</span>
+            </ng-container>
+        </button>
+        <button type="button" class="btn btn-light btn-sm" (click)="clear()">
+            <i class=" ri-eraser-line align-middle mr-2"></i> Clear
+        </button>
+    </div>
+</form>

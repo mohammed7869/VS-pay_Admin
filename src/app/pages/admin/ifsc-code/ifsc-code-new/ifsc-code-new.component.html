@@ -1,0 +1,154 @@
+<div class="card">
+    <div class="card-body">
+        <div class="col-md-6">
+            <form (ngSubmit)="submit()" [formGroup]="form" (keydown.enter)="$event.preventDefault()" autocomplete="off">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-label-group">
+                            <input type="text" id="bankName" class="form-control" formControlName="bankName"
+                                placeholder="Bank Name"
+                                [ngClass]="submitted && form.controls['bankName'].hasError('required')?'is-invalid':''" />
+                            <label for="bankName">Bank Name<span class="text-danger">*</span></label>
+                            <div class="invalid-feedback">
+                                <span>This value is required.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-label-group">
+                            <input type="text" id="code" class="form-control" formControlName="code" placeholder="Code"
+                                minlength="11" maxlength="11" (input)="setUpperCase($event)"
+                                [ngClass]="submitted && form.controls['code'].hasError('required')?'is-invalid':''" />
+                            <label for="code">Code<span class="text-danger">*</span></label>
+                            <div class="invalid-feedback">
+                                <span>This value is required.</span>
+                            </div>
+                            <div *ngIf="(form.get('code').dirty || form.get('code').touched) && (form.controls['code'].value.length != 11)"
+                                class="text-danger">IFSC code should be 11-digit alphanumeric code
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-label-group">
+                            <input type="text" id="branch" class="form-control" formControlName="branch"
+                                placeholder="Branch"
+                                [ngClass]="submitted && form.controls['branch'].hasError('required')?'is-invalid':''" />
+                            <label for="branch">Branch<span class="text-danger">*</span></label>
+                            <div class="invalid-feedback">
+                                <span>This value is required.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-label-group">
+                            <select id="state" name="state" class="form-control" placeholder="State"
+                                [ngClass]="submitted && form.controls['state'].hasError('required')?'is-invalid':''"
+                                formControlName="state">
+                                <option [value]=null>
+                                    --Select State--
+                                </option>
+                                <option *ngFor="let item of stateList" [value]="item.id">
+                                    {{ item.text }}
+                                </option>
+                            </select>
+                            <label for="state">State<span class="text-danger">*</span></label>
+                            <div class="invalid-feedback">
+                                <span>This value is required.</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <div class="form-label-group">
+                            <select id="city1" name="city1" class="form-control" placeholder="City 1"
+                                [ngClass]="submitted && form.controls['city1'].hasError('required')?'is-invalid':''"
+                                formControlName="city1">
+                                <option [value]=null>
+                                    --Select City 1--
+                                </option>
+                                <option *ngFor="let item of cityList" [value]="item.id">
+                                    {{ item.text }}
+                                </option>
+                            </select>
+                            <label for="city1">City 1<span class="text-danger">*</span></label>
+                            <div class="invalid-feedback">
+                                <span>This value is required.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-label-group">
+                            <select id="city2" name="city2" class="form-control" placeholder="City 2"
+                                formControlName="city2">
+                                <option [value]=null>
+                                    --Select City 2--
+                                </option>
+                                <option *ngFor="let item of cityList" [value]="item.id">
+                                    {{ item.text }}
+                                </option>
+                            </select>
+                            <label for="city2">City 2</label>
+                            <div class="invalid-feedback">
+                                <span>This value is required.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-label-group">
+                            <input type="text" id="stdCode" class="form-control" formControlName="stdCode"
+                                placeholder="Std Code" />
+                            <label for="stdCode">Std Code</label>
+                            <div class="invalid-feedback">
+                                <span>This value is required.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-label-group">
+                            <input type="text" id="phone" class="form-control" formControlName="phone"
+                                placeholder="Phone" />
+                            <label for="phone">Phone</label>
+                            <div class="invalid-feedback">
+                                <span>This value is required.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-label-group">
+                            <textarea rows="1" class="form-control" formControlName="address" id="address"
+                                placeholder="Address"></textarea>
+                            <label for="address">Address</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-sm mr-2 btn-sm">
+                                <i class="ri-download-2-line align-middle mr-2"></i>
+                                <ng-container *ngIf="isBtnLoading">
+                                    <span class="indicator-progress" [style.display]="'block'">
+                                        Please wait...
+                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </ng-container>
+                                <ng-container *ngIf="isBtnLoading ===false">
+                                    <span class="indicator-label">{{ form.value.id ? 'Update' : 'Submit'
+                                        }}</span>
+                                </ng-container>
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm" (click)="clear()">
+                                <i class=" ri-eraser-line align-middle mr-2"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

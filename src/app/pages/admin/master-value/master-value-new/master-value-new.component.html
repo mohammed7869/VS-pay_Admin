@@ -1,0 +1,101 @@
+<div class="card">
+    <div class="card-body">
+        <div class="col-md-6">
+            <form (ngSubmit)="submit()" [formGroup]="form" (keydown.enter)="$event.preventDefault()" autocomplete="off">
+                <div class="row">
+                    <div class="form-group col-md-8">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" formControlName="isPublished"
+                                id="isPublished">
+                            <label class="custom-control-label" for="isPublished">Is Published</label>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-label-group">
+                            <input type="text" id="tt2" class="form-control" formControlName="text" placeholder="Text"
+                                [ngClass]="submitted && form.controls['text'].hasError('required')?'is-invalid':''" />
+                            <label for="tt2">Text<span class="text-danger">*</span></label>
+                            <div class="invalid-feedback">
+                                <span>This value is required.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="form-label-group">
+                            <select id="type" name="type" class="form-control" formControlName="type"
+                                [ngClass]="submitted && form.controls['type'].hasError('required')?'is-invalid':''">
+                                <option [ngValue]=null>
+                                    --Select Type--
+                                </option>
+                                <option *ngFor="let type of appCommon.EnMastervaluetypelist" [value]="type.id">
+                                    {{ type.text }}
+                                </option>
+                            </select>
+                            <label for="type">Type</label>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-label-group">
+                            <textarea rows="3" class="form-control" formControlName="description"
+                                placeholder="Description"></textarea>
+                            <label>Description</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div *ngIf="!recordData.accountId">
+                                <button type="submit" class="btn btn-primary btn-sm mr-2 btn-sm">
+                                    <i class="ri-download-2-line align-middle mr-2"></i>
+                                    <ng-container *ngIf="isBtnLoading">
+                                        <span class="indicator-progress" [style.display]="'block'">
+                                            Please wait...
+                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                        </span>
+                                    </ng-container>
+                                    <ng-container *ngIf="isBtnLoading ===false">
+                                        <span class="indicator-label">{{ form.value.id ? 'Update' : 'Submit'
+                                            }}</span>
+                                    </ng-container>
+                                </button>
+                                <button type="button" class="btn btn-light btn-sm" (click)="clear()">
+                                    <i class=" ri-eraser-line align-middle mr-2"></i> Clear
+                                </button>
+                            </div>
+
+                            <div *ngIf="recordData.accountId">
+                                <button type="button" (click)="approveNewMVRequest()"
+                                    class="btn btn-success btn-sm mr-2 btn-sm">
+                                    <i class="ri-check-fill align-middle mr-2"></i>
+                                    <ng-container *ngIf="isApproveBtnLoading">
+                                        <span class="indicator-progress" [style.display]="'block'">
+                                            Please wait...
+                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                        </span>
+                                    </ng-container>
+                                    <ng-container *ngIf="isApproveBtnLoading ===false">
+                                        <span class="indicator-label">Approve</span>
+                                    </ng-container>
+                                </button>
+                                <button type="button" (click)="rejectNewMVRequest()"
+                                    class="btn btn-danger btn-sm mr-2 btn-sm">
+                                    <i class="ri-close-fill align-middle mr-2"></i>
+                                    <ng-container *ngIf="isRejectBtnLoading">
+                                        <span class="indicator-progress" [style.display]="'block'">
+                                            Please wait...
+                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                        </span>
+                                    </ng-container>
+                                    <ng-container *ngIf="isRejectBtnLoading ===false">
+                                        <span class="indicator-label">Reject</span>
+                                    </ng-container>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

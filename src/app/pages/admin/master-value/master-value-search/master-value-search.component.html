@@ -1,0 +1,159 @@
+<div class="page-title-box d-flex align-items-center justify-content-between mr-4 ml-4">
+    <h4 class="mb-0">{{pageTitle}}</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0" [hidden]="isChildRouteActive">
+            <li class="breadcrumb-item"><a href="javascript: void(0);">Master</a>
+            </li>
+            <li class="breadcrumb-item"><a routerLink="/admin/master-value">Application Master</a>
+            </li>
+            <li class="breadcrumb-item active">{{breadcrumbTitle}}
+            </li>
+        </ol>
+        <ol class="breadcrumb m-0" [hidden]="!isChildRouteActive">
+            <li class="breadcrumb-item">
+                <button (click)="onBack()" type="button" class="btn btn-light btn-sm">
+                    <i class="  ri-arrow-left-line align-middle mr-2"></i>Back
+                </button>
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="card" [hidden]="isChildRouteActive">
+    <div class="card-body">
+        <form [formGroup]="form" autocomplete="off">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-label-group">
+                        <input type="text" id="searchText" class="form-control" placeholder="Search Text"
+                            formControlName="searchText" autocomplete="off" />
+                        <label for="searchText">Search Text</label>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-label-group">
+                        <select id="type" name="type" class="form-control dror_ht" placeholder="Type"
+                            [ngClass]="submitted && form.controls['type'].hasError('required')?'is-invalid':''"
+                            formControlName="type" required>
+                            <option value="">
+                                --Select Type--
+                            </option>
+                            <option *ngFor="let item of appCommon.EnMastervaluetypelist" [value]="item.id">
+                                {{item.text}}
+                            </option>
+                        </select>
+                        <label for="type">Type</label>
+                        <div class="invalid-feedback" *ngIf="form.get('type').hasError('required')">
+                            <span>This value is required.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <select name="invType" class="form-control" formControlName="resultType"
+                        [ngClass]="submitted && form.controls['resultType'].hasError('required')?'is-invalid':''">
+                        <option value="">Select output option</option>
+                        <option *ngFor="let item of appCommon.ReportOutputOptionType" [value]="item.id">
+                            {{ item.text }}
+                        </option>
+
+                    </select>
+                </div>
+                <div class="col-sm-5">
+                    <div class="form-group mb-0 mt-1">
+                        <div class="col-md-12">
+                            <button type="button" class="btn btn-success btn-sm mr-2" (click)="submitSearch()">
+                                <ng-container *ngIf="isBtnLoading">
+                                    <span class="indicator-progress" [style.display]="'block'">
+                                        Search
+                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </ng-container>
+                                <ng-container *ngIf="!isBtnLoading">
+                                    <span class="indicator-label"><i
+                                            class="ri-search-line align-middle mr-2"></i>Search</span>
+                                </ng-container>
+                            </button>
+
+                            <button type="button" class="btn btn-light btn-sm mr-2" (click)="clear()">
+                                <i class=" ri-eraser-line align-middle mr-2"></i>
+                                Clear
+                            </button>
+
+                            <button type="button" class="btn btn-primary btn-sm mr-2" (click)="onCreate()"><i
+                                    class=" ri-add-line align-middle mr-2"></i>Add</button>
+
+                            <button type="button" class="btn btn-warning btn-sm"
+                                (click)="openFileUploadModal(fileUploadModal)">
+                                <i class="mdi mdi-cloud-upload-outline mr-2" aria-hidden="true"></i>Upload
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div [ngStyle]="gridHeightWidth" #printable>
+            <ag-grid-angular style="width: 100%; height:100%;" class="ag-theme-alpine" [rowData]="lst"
+                [rowHeight]="appCommon.GridRowHeight" [columnDefs]="columnDefs" (gridReady)="onGridReady($event)"
+                [frameworkComponents]="frameworkComponents" [animateRows]="true" [pagination]="true"
+                [paginationAutoPageSize]="true">
+            </ag-grid-angular>
+        </div>
+    </div>
+</div>
+<router-outlet></router-outlet>
+
+<ng-template #fileUploadModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">File Upload </h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row mb-2">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-success btn-sm float-right" (click)="downloadExcel()">
+                    <i class="mdi mdi-cloud-download-outline mr-2" aria-hidden="true"></i>Download Sample
+                </button>
+            </div>
+        </div>
+        <ngb-alert type="danger" [dismissible]="false" *ngIf="uploadMessage">{{uploadMessage}} records uploaded
+            successfully.</ngb-alert>
+        <div class="custom-file">
+            <form [formGroup]="uploadForm">
+                <div class="form-label-group">
+                    <select id="type" name="type" class="form-control" formControlName="type" (change)="onSelect()"
+                        [ngClass]="isUploadDocSubmitted && uploadForm.controls['type'].hasError('required')?'is-invalid':''">
+                        <option [ngValue]=null>
+                            --Select Type--
+                        </option>
+                        <option *ngFor="let type of appCommon.EnMastervaluetypelist" [value]="type.id">
+                            {{ type.text }}
+                        </option>
+                    </select>
+                    <label for="type">Type</label>
+                </div>
+                <div>
+                    <input #myInput class="form-control" type="file" id="myfile" formControlName="files"
+                        (change)="onFileChange($event)" accept=".xlsx"
+                        [ngClass]="isUploadDocSubmitted && uploadForm.controls['files'].hasError('required')?'is-invalid':''">
+                    <div class="invalid-feedback">
+                        <span>This value is required.</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="clearUploadForm()">
+            <i class="fa fa-times mr-2" aria-hidden="true"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-primary btn-sm me-2" (click)="uploadDetails()">
+            <span class="indicator-progress" [style.display]="'block'" [hidden]="!isUploadDocBtnLoading">
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
+            <span class="indicator-label" [hidden]="isUploadDocBtnLoading">
+                <i class="fa fa-share-square mr-2" aria-hidden="true"></i> Submit
+            </span>
+        </button>
+    </div>
+</ng-template>

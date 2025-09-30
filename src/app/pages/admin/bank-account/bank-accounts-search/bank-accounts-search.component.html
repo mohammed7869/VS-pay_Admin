@@ -1,0 +1,103 @@
+<div class="page-title-box d-flex align-items-center justify-content-between mr-4 ml-4">
+    <h4 class="mb-0">{{pageTitle}}</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0" [hidden]="isChildRouteActive">
+            <li class="breadcrumb-item"><a href="javascript: void(0);">Master</a>
+            </li>
+            <li class="breadcrumb-item"><a routerLink="/admin/bank-account">Bank Account</a>
+            </li>
+            <li class="breadcrumb-item active">{{breadcrumbTitle}}
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="card" [hidden]="isChildRouteActive">
+    <div class="card-body">
+        <form [formGroup]="form" autocomplete="off">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-label-group">
+                        <input type="text" id="searchText" class="form-control" placeholder="Search Text"
+                            formControlName="searchText" autocomplete="off" />
+                        <label for="searchText">Search Text</label>
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <select name="invType" class="form-control" formControlName="resultType"
+                        [ngClass]="submitted && form.controls['resultType'].hasError('required')?'is-invalid':''">
+                        <option value="">Select output option</option>
+                        <option *ngFor="let item of appCommon.ReportOutputOptionType" [value]="item.id">
+                            {{ item.text }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group mb-0 mt-1">
+                        <div class="col-md-12">
+                            <button type="button" class="btn btn-success btn-sm mr-2" (click)="submitSearch()">
+                                <ng-container *ngIf="isBtnLoading">
+                                    <span class="indicator-progress" [style.display]="'block'">
+                                        Search
+                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </ng-container>
+                                <ng-container *ngIf="!isBtnLoading">
+                                    <span class="indicator-label"><i
+                                            class="ri-search-line align-middle mr-2"></i>Search</span>
+                                </ng-container>
+                            </button>
+
+                            <button type="button" class="btn btn-light btn-sm mr-2" (click)="clear()">
+                                <i class=" ri-eraser-line align-middle mr-2"></i>
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div [ngStyle]="gridHeightWidth" #printable>
+            <ag-grid-angular style="width: 100%; height:100%;" class="ag-theme-alpine" [rowData]="lst"
+                [rowHeight]="appCommon.GridRowHeight" [columnDefs]="columnDefs" (gridReady)="onGridReady($event)"
+                [frameworkComponents]="frameworkComponents" [animateRows]="true">
+            </ag-grid-angular>
+        </div>
+    </div>
+</div>
+<router-outlet></router-outlet>
+
+<!-- Standard Modal -->
+<ng-template #content role="document" let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title mt-0">Approve Bank Details</h5>
+        <button type="button" class="close" aria-hidden="true" (click)="modal.dismiss('Cross click')">×</button>
+    </div>
+    <div class="modal-body">
+        <h6><label>Applicant Name :</label> {{singleRecordData.account.name}}</h6>
+        <h6 *ngIf="singleRecordData.account.itsNo"><label>ITS :</label> {{singleRecordData.account.itsNo}}</h6>
+        <h6><label>Account Name :</label> {{singleRecordData.accountName}}</h6>
+        <h6><label>Account No:</label> {{singleRecordData.accountNo}}</h6>
+        <h6><label>Confirm Account No :</label> {{singleRecordData.confirmAccountNo}}</h6>
+        <h6><label>Bank Name :</label> {{singleRecordData.bankName}}</h6>
+        <h6><label>Branch Name :</label> {{singleRecordData.branchName}}</h6>
+        <h6><label>Ifsc Code :</label> {{singleRecordData.ifscCode}}</h6>
+    </div>
+    <div class="modal-footer" *ngIf="!singleRecordData.isApproved">
+        <button type="button" class="btn btn-light btn-sm" (click)="modal.close('Close click')"><i
+                class="ri-close-fill align-middle mr-2"></i>Close</button>
+        <button type="button" (click)="onApproveClick()" class="btn btn-primary btn-sm mr-2 btn-sm">
+            <i *ngIf="!singleRecordData.isApproved" class="ri-checkbox-circle-line align-middle mr-2"></i>
+            <i *ngIf="singleRecordData.isApproved" class="ri-close-circle-line align-middle mr-2"></i>
+            <ng-container *ngIf="isAppBtnLoading">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait...
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="isAppBtnLoading ===false">
+                <span class="indicator-label">{{ singleRecordData.isApproved ? 'Un-approve' : 'Approve'}}</span>
+            </ng-container>
+        </button>
+    </div>
+</ng-template>

@@ -1,0 +1,60 @@
+<div class="card">
+    <div class="card-body">
+        <form (ngSubmit)="submit()" [formGroup]="form" (keydown.enter)="$event.preventDefault()" autocomplete="off">
+
+            <div class="col-md-4 mb-2">
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" formControlName="isActive" id="isActive">
+                        <label class="custom-control-label" for="isActive">Active</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-label-group">
+                    <input type="number" min="0" id="coin" class="form-control" formControlName="coin"
+                        placeholder="Coin"
+                        [ngClass]="submitted && form.controls['coin'].hasError('required')?'is-invalid':''" />
+                    <label for="coin">Coin<span class="text-danger">*</span></label>
+                    <div class="invalid-feedback">
+                        <span>This value is required.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-label-group">
+                    <input type="number" min="0" id="value" class="form-control" formControlName="value"
+                        placeholder="Value"
+                        [ngClass]="submitted && form.controls['value'].hasError('required')?'is-invalid':''" />
+                    <label for="value">Value<span class="text-danger">*</span></label>
+                    <div class="invalid-feedback">
+                        <span>This value is required.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-0">
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-primary btn-sm mr-2 btn-sm">
+                        <i class="  ri-download-2-line align-middle mr-2"></i>
+
+                        <ng-container *ngIf="isBtnLoading">
+                            <span class="indicator-progress" [style.display]="'block'">
+                                Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </ng-container>
+                        <ng-container *ngIf="isBtnLoading ===false">
+                            <span class="indicator-label">{{ form.value.id ? 'Update' : 'Submit' }}</span>
+                        </ng-container>
+                    </button>
+                    <button type="button" class="btn btn-light btn-sm" (click)="clear()">
+                        <i class=" ri-eraser-line align-middle mr-2"></i> Clear
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

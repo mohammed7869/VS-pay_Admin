@@ -1,0 +1,36 @@
+<div class="card">
+    <div class="modal-header">
+        <h5 class="modal-title mt-0">Message to applicant</h5>
+        <button type="button" class="close" aria-hidden="true" (click)="close()">×</button>
+    </div>
+    <div class="p-3 chat-input-section border-top">
+        <!-- todo -->
+        <form (ngSubmit)="submitNewMessage()" [formGroup]="messageform" class="row">
+            <div class="col">
+                <div class="form-label-group position-relative">
+                    <textarea type="text" class="form-control" id="description" formControlName="description"
+                        placeholder="Enter your Message..." cols="3"
+                        [ngClass]="submitted && messageform.controls['description'].hasError('required')?'is-invalid':''"></textarea>
+                    <label for="description">Message<span class="text-danger">*</span></label>
+                    <div class="invalid-feedback">
+                        <span>This value is required.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary chat-send w-md waves-effect waves-ligh btn-sm">
+                    <i class="mdi mdi-send align-middle mr-2"></i>
+                    <ng-container *ngIf="issbtBtnLoading">
+                        <span class="indicator-progress" [style.display]="'block'">
+                            Please wait...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </ng-container>
+                    <ng-container *ngIf="issbtBtnLoading ===false">
+                        <span class="indicator-label">Send</span>
+                    </ng-container>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

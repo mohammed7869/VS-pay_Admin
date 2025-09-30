@@ -1,0 +1,130 @@
+<header id="page-topbar">
+  <div class="navbar-header" [ngClass]="{ 'header_style': userData.fromAdmin }">
+    <div class="d-flex">
+      <!-- LOGO -->
+      <div class="navbar-brand-box">
+        <a class="logo logo-dark pointer">
+          <span class="logo-sm pointer" routerLink="/">
+            <img src="assets/images/logo-dark.png" alt="" height="100">
+          </span>
+          <span class="logo-lg pointer" routerLink="/">
+            <img src="assets/images/logo-dark.png" alt="" height="100">
+          </span>
+        </a>
+
+        <a class="logo logo-light pointer">
+          <span class="logo-sm pointer" routerLink="/">
+            <img src="assets/images/logo-dark.png" alt="" height="100">
+          </span>
+          <span class="logo-lg pointer" routerLink="/">
+            <img src="assets/images/logo-dark.png" alt="" height="100">
+          </span>
+        </a>
+      </div>
+
+      <button type="button" class="btn btn-sm px-3 font-size-24 header-item waves-effect" id="vertical-menu-btn"
+        (click)="toggleMobileMenu($event)">
+        <i class="ri-menu-2-line align-middle"></i>
+      </button>
+    </div>
+
+    <div class="d-flex">
+
+      <div class="dropdown d-inline-block d-lg-none ml-2" ngbDropdown>
+        <button type="button" ngbDropdownToggle class="btn header-item noti-icon waves-effect"
+          id="page-header-search-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="ri-search-line"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right p-0"
+          aria-labelledby="page-header-search-dropdown" ngbDropdownMenu>
+
+          <form class="p-3">
+            <div class="form-group m-0">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search ...">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="submit"><i class="ri-search-line"></i></button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="dropdown d-none d-lg-inline-block ml-1">
+        <button type="button" class="btn header-item noti-icon waves-effect" (click)="fullscreen()">
+          <i class="ri-fullscreen-line"></i>
+        </button>
+      </div>
+
+      <div class="dropdown d-inline-block" ngbDropdown #myDrop="ngbDropdown">
+        <button type="button" ngbDropdownToggle class="btn header-item noti-icon waves-effect"
+          id="page-header-notifications-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="ri-notification-3-line"></i>
+          <span class="badge rounded-pill badge-notification bg-danger" *ngIf="searchCount>0">{{searchCount}}</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right p-0" ngbDropdownMenu
+          aria-labelledby="page-header-notifications-dropdown">
+          <div class="p-3">
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <a *ngIf="recordlist.length" (click)="myDrop.close()" routerLink="/notification" class="small">View
+                  All</a>
+              </div>
+            </div>
+          </div>
+          <p class="text-center" *ngIf="!recordlist.length">No new notification</p>
+          <perfect-scrollbar style="position: relative; height: 230px;" [config]="configData" *ngIf="recordlist.length">
+            <a class="text-reset notification-item" *ngFor="let item of recordlist; let index = index ">
+              <div class="media">
+                <div class="avatar-xs mr-3">
+                  <span class="avatar-title bg-primary rounded-circle font-size-16">
+                    <i class="ri-shopping-cart-line"></i>
+                  </span>
+                </div>
+                <div class="media-body">
+                  <h6 class="mt-0 mb-1">{{item.subject}}</h6>
+                  <div class="font-size-12 text-muted">
+                    <div [innerHTML]="item.result"></div>
+                    <p class="mb-0"><i class="mdi mdi-clock-outline"></i>
+                      {{item.date | date : 'MMM dd, yyyy hh:mm a' }}</p>
+                    <small *ngIf="!item.isRead" class="text-muted pointer mr-1"
+                      (click)="myDrop.close(); onEdit(item,index)"><a><i
+                          class="ri-eye-line align-middle mr-0"></i><u>View</u></a></small>
+                    <small class="text-muted pointer" (click)="myDrop.close(); markRead(item,index)"><a><i
+                          class="ri-close-fill align-middle mr-0"></i><u>Cancel</u></a></small>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </perfect-scrollbar>
+          <div class="p-2 border-top">
+            <a (click)="myDrop.close()" routerLink="/notification"
+              class="btn btn-sm btn-link font-size-14 btn-block text-center">
+              <i class="mdi mdi-arrow-right-circle mr-1"></i> View More..
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="dropdown d-inline-block user-dropdown" ngbDropdown>
+        <button type="button" ngbDropdownToggle class="btn header-item waves-effect" id="page-header-user-dropdown"
+          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <img class="rounded-circle header-profile-user"
+            [src]="userData.itsNo ? (userData.itsNo | imageSecurePipe | async) : 'assets/images/favicon-32x32.png'">
+          <span class="d-none d-xl-inline-block ml-2 mr-2">{{userData.fullName}}</span>
+          <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
+        </button>
+
+        <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+          <!-- item-->
+          <a *ngIf="userData.role == 'Applicant'" class="dropdown-item" href="javascript: void(0);"
+            (click)="onProfileClick()"><i class="ri-user-line align-middle mr-1"></i>Profile</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item text-danger" href="javascript: void(0);" (click)="logout()"><i
+              class="ri-shut-down-line align-middle mr-1 text-danger"></i>Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

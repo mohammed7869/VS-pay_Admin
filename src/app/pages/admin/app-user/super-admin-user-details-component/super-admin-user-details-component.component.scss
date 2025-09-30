@@ -1,0 +1,50 @@
+/* super-admin-user-details-component.component.scss */
+
+.d-flex.justify-content-end {
+    margin-bottom: 20px;
+  }
+  
+
+  .card {
+    margin: 20px;
+  }
+
+  .container {
+    margin-top: 20px;
+  }
+  
+  .badge-success {
+    background-color: #28a745;
+  }
+  
+  .badge-danger {
+    background-color: #dc3545;
+  }
+
+  /* super-admin-user-details-component.component.scss */
+
+.table-fixed thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #f8f9fa; /* Use the background color of the header */
+}
+
+.table-responsive {
+    display: block;
+    max-height: 400px; /* Adjust the height as needed */
+    overflow-y: auto;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05); /* Adjust the odd row color if needed */
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: rgba(0, 0, 0, 0.01); /* Adjust the even row color if needed */
+}
+
+.table thead th {
+    background-clip: padding-box;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 1px 1px rgba(0, 0, 0, 0.06);
+}

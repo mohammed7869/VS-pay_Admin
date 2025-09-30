@@ -1,0 +1,46 @@
+<div class="modal-header">
+    <h5 class="modal-title mt-0">
+        Ticket #{{ticketData.ticketNo}}
+        <small class="text-center"><span class="badge badge-soft-primary">{{ticketData.date | date: 'dd-MMM-yyyy'}}</span></small>
+    </h5>
+    <button type="button" class="close" aria-hidden="true" (click)="close()">×</button>
+</div>
+<div class="card-body">
+    <div class="card">
+        <ul>
+            <li><label>Application No: </label> <span> #{{ticketData.applicationNo}}</span></li>
+            <li><label>Ticket Subject: </label> <span> {{ticketData.ticketSubjectText}}</span></li>
+            <li><label>Descripton: </label> <span> {{ticketData.description}}</span></li>
+            <li *ngIf="ticketData.reply"><label>Reply: </label> <span> {{ticketData.reply}}</span></li>
+        </ul>
+    </div>
+</div>
+<div class="p-3 chat-input-section border-top" *ngIf="!ticketData.ownTicket && ticketData.status == 1">
+    <form (ngSubmit)="submitRelpy()" [formGroup]="form" class="row">
+        <div class="col">
+            <div class="form-label-group position-relative">
+                <textarea type="text" class="form-control" id="text" formControlName="text"
+                    placeholder="Enter Message..."
+                    [ngClass]="submitted && form.controls['text'].hasError('required')?'is-invalid':''"></textarea>
+                <label for="text">Message<span class="text-danger">*</span></label>
+                <div class="invalid-feedback">
+                    <span>This value is required.</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary chat-send w-md waves-effect waves-light">
+                <i class="mdi mdi-send"></i>
+                <ng-container *ngIf="isBtnLoading">
+                    <span class="indicator-progress" [style.display]="'block'">
+                        Please wait...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="!isBtnLoading">
+                    <span class="indicator-label">Send</span>
+                </ng-container>
+            </button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,61 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title mb-4">Topup Approval Requests</h4>
+
+          <div *ngIf="loading" class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+
+          <div *ngIf="!loading && pendingTopUps.length === 0" class="alert alert-info">
+            No pending topup requests
+          </div>
+
+          <div *ngIf="!loading && pendingTopUps.length > 0" class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>User Mobile</th>
+                  <th>User Name</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let topup of pendingTopUps">
+                  <td>{{ topup.id }}</td>
+                  <td>{{ topup.recipientMobileNo }}</td>
+                  <td>{{ topup.recipientFullName }}</td>
+                  <td>{{ topup.amount | number:'1.2-2' }}</td>
+                  <td>{{ topup.transactionDate | date:'short' }}</td>
+                  <td>{{ topup.description }}</td>
+                  <td>
+                    <button 
+                      class="btn btn-success btn-sm mr-2" 
+                      (click)="approveTopUp(topup.id)"
+                      [disabled]="loading">
+                      <i class="ri-check-line"></i> Approve
+                    </button>
+                    <button 
+                      class="btn btn-danger btn-sm" 
+                      (click)="rejectTopUp(topup.id)"
+                      [disabled]="loading">
+                      <i class="ri-close-line"></i> Reject
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

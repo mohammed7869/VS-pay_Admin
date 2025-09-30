@@ -1,0 +1,96 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { CommonService } from 'src/app/providers/services/common.service';
+import { ToastrMessageService } from 'src/app/providers/services/toastr-message.service';
+import { UserService } from 'src/app/providers/services/user.service';
+
+@Component({
+  selector: 'app-app-user-details',
+  templateUrl: './app-user-details.component.html',
+  styleUrls: ['./app-user-details.component.scss']
+})
+export class AppUserDetailsComponent implements OnInit {
+  lst: any = [];
+  user: any = {};
+  userId: any;
+  constructor(
+    private toastrMessageService: ToastrMessageService,
+    private route: ActivatedRoute,
+    private commonService: CommonService,
+    private userService: UserService
+  ) { }
+
+  ngOnInit(): void {
+    if (this.route.snapshot.data['recordData']) {
+      this.user = this.route.snapshot.data['recordData'];
+    }
+    if (this.route.snapshot.params.id)
+      { this.userId = this.route.snapshot.params.id;
+        this.search();
+      }
+  }
+
+  search() {
+    var fdata = { userId: this.userId };
+    this.commonService
+      .listtransaction(fdata)
+      .subscribe(
+        data => {
+          this.lst = data;
+        },
+        error => {
+          this.toastrMessageService.showInfo(error.error.message, "Info");
+        });
+  }
+
+  getStatusText(status: number): string {
+    switch(status) {
+      case 1: return 'Completed';
+      case 2: return 'Pending';
+      case 3: return 'Failed';
+      default: return 'Unknown';
+    }
+  }
+
+  approveTopUp(txnId: number): void {
+    if (confirm('Are you sure you want to approve this topup?')) {
+      this.userService.approveTopUp({ txnId: txnId }).subscribe(
+        (response) => {
+          this.toastrMessageService.showSuccess('Topup approved successfully', 'Success');
+          this.search(); // Refresh the transaction list
+          this.loadUserDetails(); // Refresh user details including wallet balance
+        },
+        (error) => {
+          this.toastrMessageService.showError('Failed to approve topup', 'Error');
+        }
+      );
+    }
+  }
+
+  rejectTopUp(txnId: number): void {
+    if (confirm('Are you sure you want to reject this topup?')) {
+      this.userService.rejectTopUp({ txnId: txnId }).subscribe(
+        (response) => {
+          this.toastrMessageService.showSuccess('Topup rejected successfully', 'Success');
+          this.search(); // Refresh the transaction list
+        },
+        (error) => {
+          this.toastrMessageService.showError('Failed to reject topup', 'Error');
+        }
+      );
+    }
+  }
+
+  loadUserDetails(): void {
+    if (this.userId) {
+      this.userService.getUserDetail({ userId: this.userId }).subscribe(
+        (response) => {
+          this.user = response;
+        },
+        (error) => {
+          this.toastrMessageService.showError('Failed to load user details', 'Error');
+        }
+      );
+    }
+  }
+}
