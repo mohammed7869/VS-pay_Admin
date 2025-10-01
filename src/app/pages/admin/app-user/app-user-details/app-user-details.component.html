@@ -37,7 +37,8 @@
             <span class="badge" [ngClass]="{ 
               'badge-success': transaction.status === 1, 
               'badge-warning': transaction.status === 2,
-              'badge-danger': transaction.status === 3 
+              'badge-info': transaction.status === 3,
+              'badge-danger': transaction.status === 4 
             }">
               {{ getStatusText(transaction.status) }}
             </span>

@@ -47,7 +47,8 @@ export class AppUserDetailsComponent implements OnInit {
     switch(status) {
       case 1: return 'Completed';
       case 2: return 'Pending';
-      case 3: return 'Failed';
+      case 3: return 'Under Processing';
+      case 4: return 'Failed';
       default: return 'Unknown';
     }
   }
