@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonService } from 'src/app/providers/services/common.service';
+import { RecordCreationService } from 'src/app/providers/services/record-creation.service';
 import { ToastrMessageService } from 'src/app/providers/services/toastr-message.service';
 import { UserService } from 'src/app/providers/services/user.service';
 
@@ -17,7 +18,8 @@ export class AppUserDetailsComponent implements OnInit {
     private toastrMessageService: ToastrMessageService,
     private route: ActivatedRoute,
     private commonService: CommonService,
-    private userService: UserService
+    private userService: UserService,
+    private recordCreationService: RecordCreationService
   ) { }
 
   ngOnInit(): void {
@@ -57,6 +59,19 @@ export class AppUserDetailsComponent implements OnInit {
     if (confirm('Are you sure you want to approve this topup?')) {
       this.userService.approveTopUp({ txnId: txnId }).subscribe(
         (response) => {
+          console.log(response);
+          this.recordCreationService.announceUpdate({
+            table: 'User',
+            id: this.userId,
+            fullName: this.user.fullName,
+            phoneNumber: this.user.phoneNumber,
+            roleId: this.user.roleId,
+            email: this.user.email,
+            password: this.user.password,
+            confirmPassword: this.user.confirmPassword,        
+            pendingTransactionCount: this.lst.filter((transaction: any) => transaction.status === 2).length - 1,
+            hasPendingTransactions: this.lst.filter((transaction: any) => transaction.status === 2).length > 0
+          });
           this.toastrMessageService.showSuccess('Topup approved successfully', 'Success');
           this.search(); // Refresh the transaction list
           this.loadUserDetails(); // Refresh user details including wallet balance

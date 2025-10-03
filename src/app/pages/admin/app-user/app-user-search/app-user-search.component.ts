@@ -79,8 +79,7 @@ export class AppUserSearchComponent implements OnInit {
             roleId: record.roleId,
             email: record.email,
             password: record.password,
-            confirmPassword: record.confirmPassword,
-
+            confirmPassword: record.confirmPassword           
           }
           this.lst.unshift(newRowData);
           this.gridApi.updateRowData({ add: [newRowData], addIndex: 0 });
@@ -103,6 +102,8 @@ export class AppUserSearchComponent implements OnInit {
               newRow.email = record.email;
               newRow.password = record.password;
               newRow.confirmPassword = record.confirmPassword;
+              newRow.pendingTransactionCount = record.pendingTransactionCount;
+              newRow.hasPendingTransactions = record.hasPendingTransactions;
 
               //********************** */
               return newRow;
@@ -110,7 +111,7 @@ export class AppUserSearchComponent implements OnInit {
           });
 
           this.gridApi.updateRowData({ update: [newRowData] });
-          this.router.navigate(['admin/app-users']);
+          //this.router.navigate(['admin/app-users']);
         }
       });
   }
@@ -277,6 +278,38 @@ export class AppUserSearchComponent implements OnInit {
       // },
       { field: 'mobile', headerName: 'Mobile Number', sortable: true, filter: true, autoHeight: true, resizable: true, wrapText: true, width: 150, },
       { field: 'email', headerName: 'Email', sortable: true, filter: true, autoHeight: true, resizable: true, wrapText: true, width: 200, },
+      { 
+        field: 'pendingTransactionCount', 
+        headerName: 'Pending Transactions', 
+        sortable: true, 
+        filter: true, 
+        autoHeight: true, 
+        resizable: true, 
+        wrapText: true, 
+        width: 150,
+        cellRenderer: (data: any) => {
+          if (data.value > 0) {
+            return `<span class="badge badge-warning">${data.value}</span>`;
+          }
+          return '<span class="badge badge-success">0</span>';
+        }
+      },
+      { 
+        field: 'hasPendingTransactions', 
+        headerName: 'Has Pending', 
+        sortable: true, 
+        filter: true, 
+        autoHeight: true, 
+        resizable: true, 
+        wrapText: true, 
+        width: 120,
+        cellRenderer: (data: any) => {
+          if (data.value) {
+            return '<span class="badge badge-danger">Yes</span>';
+          }
+          return '<span class="badge badge-success">No</span>';
+        }
+      },
     ];
   }
 
@@ -288,7 +321,8 @@ export class AppUserSearchComponent implements OnInit {
   getFilters() {
     var obj: any = {
       searchText: "",
-      roleId: null
+      roleId: null,
+      pendingFilter: null
     };
 
     if (this.form.value.searchText) {
@@ -299,6 +333,10 @@ export class AppUserSearchComponent implements OnInit {
       obj.roleId = this.form.value.roleId;
     }
 
+    if (this.form.value.pendingFilter) {
+      obj.pendingFilter = this.form.value.pendingFilter === 'true';
+    }
+
     return obj;
   }
 
@@ -307,6 +345,7 @@ export class AppUserSearchComponent implements OnInit {
       searchText: [""],
       resultType: [1, [Validators.required]],
       roleId: [null],
+      pendingFilter: [""],
     });
   }
 

@@ -4,9 +4,11 @@
 
 export const environment = {
   production: false,
-  userName: 'superadmin',
-  password: 'superadmin',
+  userName: 'admin',
+  password: 'admin12345',
   apiUrl: 'https://localhost:7194/api/1',
+  // apiUrl: 'https://vspay.clearconceptsolutions.com/api/1',
+  
 };
 
 /*
