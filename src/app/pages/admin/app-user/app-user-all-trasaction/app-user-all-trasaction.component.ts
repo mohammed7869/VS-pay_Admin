@@ -46,24 +46,58 @@ export class AppUserAllTrasactionComponent implements OnInit {
       .listtransaction({})
       .subscribe(
         data => {
-          this.lst = data;
+          // Sort transactions by transactionDate in descending order (most recent first)
+          this.lst = data.sort((a: any, b: any) => {
+            return new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime();
+          });
         },
         error => {
           this.toastrMessageService.showInfo(error.error.message, "Info");
         });
   }
 
+  getArrowIcon(isCr: boolean): string {
+    if (isCr === true) {
+      return '<i class="fas fa-arrow-up text-danger"></i> Paid';
+    } else if (isCr === false) {
+      return '<i class="fas fa-arrow-down text-success"></i> Received';
+    }
+    return '';
+  }
+
   onGridReady(params: any) {
     this.gridApi = params.api;
     this.columnDefs = [
       {
-        field: 'transactionDate', headerName: 'Date', sortable: true, filter: true, wrapText: true, autoHeight: true, resizable: true, width: 150,
+        field: 'transactionDate', headerName: 'Date', sortable: true, filter: true, wrapText: true, autoHeight: true, resizable: true, width: 150, sort: 'desc',
         valueFormatter: function (params) {
           return moment(params.value).format('DD/MM/YYYY ' + 'hh:mm A');
         },
       },
       { field: 'amount', headerName: 'Amount', sortable: true, autoHeight: true, filter: true, resizable: true, wrapText: true, width: 80 },
-      { field: 'description', headerName: 'Description', sortable: true, autoHeight: true, filter: true, resizable: true, wrapText: true, width: 150 },
+      { 
+        field: 'isCr', 
+        headerName: 'Type', 
+        sortable: true, 
+        autoHeight: true, 
+        filter: true, 
+        resizable: true, 
+        wrapText: true, 
+        width: 150,
+        cellRenderer: (params) => {
+          return this.getArrowIcon(params.value);
+        }
+      },
+      { 
+        field: 'description', 
+        headerName: 'Description', 
+        sortable: true, 
+        autoHeight: true, 
+        filter: true, 
+        resizable: true, 
+        wrapText: true, 
+        width: 150
+      },
       { field: 'recipientFullName', headerName: 'Recipient', sortable: true, autoHeight: true, filter: true, resizable: true, wrapText: true, width: 150 },
       { field: 'recipientMobileNo', headerName: 'Mobile', sortable: true, autoHeight: true, filter: true, resizable: true, wrapText: true, width: 150 },
       {

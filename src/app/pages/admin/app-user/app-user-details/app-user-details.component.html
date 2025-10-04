@@ -20,6 +20,7 @@
           <th>ID</th>
           <th>Transaction Date</th>
           <th>Amount</th>
+          <th>Type</th>
           <th>Description</th>
           <th>Recipient</th>
           <th>Status</th>
@@ -31,6 +32,7 @@
           <td>{{ transaction.id }}</td>
           <td>{{ transaction.transactionDate | date:'short' }}</td>
           <td>{{ transaction.amount | number:'1.2-2' }}</td>
+          <td [innerHTML]="getArrowIcon(transaction.isCr)"></td>
           <td>{{ transaction.description }}</td>
           <td>{{ transaction.recipientFullName }} ({{ transaction.recipientMobileNo }})</td>
           <td>

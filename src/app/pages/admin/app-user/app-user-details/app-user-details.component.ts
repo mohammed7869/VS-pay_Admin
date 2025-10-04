@@ -38,7 +38,10 @@ export class AppUserDetailsComponent implements OnInit {
       .listtransaction(fdata)
       .subscribe(
         data => {
-          this.lst = data;
+          // Sort transactions by transactionDate in descending order (most recent first)
+          this.lst = data.sort((a: any, b: any) => {
+            return new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime();
+          });
         },
         error => {
           this.toastrMessageService.showInfo(error.error.message, "Info");
@@ -53,6 +56,15 @@ export class AppUserDetailsComponent implements OnInit {
       case 4: return 'Failed';
       default: return 'Unknown';
     }
+  }
+
+  getArrowIcon(isCr: boolean): string {
+    if (isCr === false) {
+      return '<i class="fas fa-arrow-up text-danger"></i> Paid';
+    } else if (isCr === true) {
+      return '<i class="fas fa-arrow-down text-success"></i> Received';
+    }
+    return '';
   }
 
   approveTopUp(txnId: number): void {

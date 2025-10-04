@@ -250,7 +250,7 @@ export class AdminLoginComponent implements OnInit {
         .subscribe(
           data => {
             this.toastrMessageService.showSuccess("Login Successful", 'Success');
-            this.router.navigate(["admin"]);
+            this.router.navigate(["admin/app-users"]);
           },
           error => {
             this.error = error.message;

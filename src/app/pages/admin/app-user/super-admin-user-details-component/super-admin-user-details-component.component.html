@@ -66,7 +66,7 @@
                                         <td>{{ i + 1 }}</td>
                                         <td>{{ transaction.transactionDate | date:'short' }}</td>
                                         <td>{{ transaction.amount | number:'1.2-2' }}</td>
-                                        <td>{{ transaction.description }}</td>
+                                        <td [innerHTML]="getArrowIcon(transaction.description) + ' ' + transaction.description"></td>
                                         <td>{{ transaction.recipientFullName }} ({{ transaction.recipientMobileNo }})
                                         </td>
                                         <td>

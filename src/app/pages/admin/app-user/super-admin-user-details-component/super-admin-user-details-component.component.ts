@@ -78,13 +78,25 @@ export class SuperAdminUserDetailsComponentComponent implements OnInit {
         });
   }
 
+  getArrowIcon(isCr: boolean): string {
+    if (isCr === false) {
+      return '<i class="fas fa-arrow-up text-danger"></i> Paid';
+    } else if (isCr === true) {
+      return '<i class="fas fa-arrow-down text-success"></i> Received';
+    }
+    return '';
+  }
+
   search() {
     var fdata = { userId: this.userId };
     this.commonService
       .listtransaction(fdata)
       .subscribe(
         data => {
-          this.lst = data;
+          // Sort transactions by transactionDate in descending order (most recent first)
+          this.lst = data.sort((a: any, b: any) => {
+            return new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime();
+          });
         },
         error => {
           this.toastrMessageService.showInfo(error.error.message, "Info");
@@ -97,7 +109,10 @@ export class SuperAdminUserDetailsComponentComponent implements OnInit {
       .getCoinTransferDetails(fdata)
       .subscribe(
         data => {
-          this.coinLoglst = data;
+          // Sort coin log by transferDate in descending order (most recent first)
+          this.coinLoglst = data.sort((a: any, b: any) => {
+            return new Date(b.transferDate).getTime() - new Date(a.transferDate).getTime();
+          });
         },
         error => {
           this.toastrMessageService.showInfo(error.error.message, "Info");
@@ -154,12 +169,25 @@ export class SuperAdminUserDetailsComponentComponent implements OnInit {
     this.gridApi = params.api;
     this.columnDefs = [
       {
-        field: 'transactionDate', headerName: 'Date', sortable: true, filter: true, wrapText: true, autoHeight: true, resizable: true, width: 150,
+        field: 'transactionDate', headerName: 'Date', sortable: true, filter: true, wrapText: true, autoHeight: true, resizable: true, width: 150, sort: 'desc',
         valueFormatter: function (params) {
           return moment(params.value).format('DD/MM/YYYY ' + 'hh:mm A');
         },
       },
       { field: 'amount', headerName: 'Amount', sortable: true, autoHeight: true, filter: true, resizable: true, wrapText: true, width: 80 },
+      { 
+        field: 'isCr', 
+        headerName: 'Type', 
+        sortable: true, 
+        autoHeight: true, 
+        filter: true, 
+        resizable: true, 
+        wrapText: true, 
+        width: 150,
+        cellRenderer: (params) => {
+          return this.getArrowIcon(params.value);
+        }
+      },
       { field: 'description', headerName: 'Description', sortable: true, autoHeight: true, filter: true, resizable: true, wrapText: true, width: 150 },
       { field: 'recipientFullName', headerName: 'Recipient', sortable: true, autoHeight: true, filter: true, resizable: true, wrapText: true, width: 150 },
       { field: 'recipientMobileNo', headerName: 'Mobile', sortable: true, autoHeight: true, filter: true, resizable: true, wrapText: true, width: 150 },
@@ -182,7 +210,7 @@ export class SuperAdminUserDetailsComponentComponent implements OnInit {
     this.gridApiCoin = params.api;
     this.columnDefsCoin = [
       {
-        field: 'transferDate', headerName: 'Date', sortable: true, filter: true, wrapText: true, autoHeight: true, resizable: true, width: 150,
+        field: 'transferDate', headerName: 'Date', sortable: true, filter: true, wrapText: true, autoHeight: true, resizable: true, width: 150, sort: 'desc',
         valueFormatter: function (params) {
           return moment(params.value).format('DD/MM/YYYY ' + 'hh:mm A');
         },
