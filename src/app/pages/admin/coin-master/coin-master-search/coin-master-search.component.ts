@@ -31,7 +31,7 @@ export class CoinMasterSearchComponent implements OnInit, AfterViewInit, OnDestr
   insertSubscription: Subscription;
   updateSubscription: Subscription;
   breadcrumbTitle: String = 'List';
-  pageTitle: String = 'Coin Master Listings';
+  pageTitle: String = 'Token Master Listings';
 
   isCollapsed = true;
   gridHeightWidth: any = {};
@@ -51,16 +51,16 @@ export class CoinMasterSearchComponent implements OnInit, AfterViewInit, OnDestr
 
         if (!this.isChildRouteActive) {
           this.breadcrumbTitle = 'List';
-          this.pageTitle = 'Coin Master Listings';
+          this.pageTitle = 'Token Master Listings';
         }
         else {
           if (event.url.indexOf('admin/coin-master/new') !== -1) {
             this.breadcrumbTitle = 'New';
-            this.pageTitle = 'Create New Coin Master';
+            this.pageTitle = 'Create New Token Master';
           }
           else if (event.url.indexOf('admin/coin-master/edit') !== -1) {
             this.breadcrumbTitle = 'Edit';
-            this.pageTitle = 'Coin Master Info';
+            this.pageTitle = 'Token Master Info';
           }
           else {
 

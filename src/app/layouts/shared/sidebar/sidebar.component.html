@@ -1,68 +1,89 @@
 <div class="vertical-menu">
-      <perfect-scrollbar>
-            <div id="sidebar-menu">
-                  <ul class="metismenu list-unstyled" id="side-menu" #sideMenu>
-                        <li><a routerLink="/admin" class="is-parent"><i class="bx ri-dashboard-line"></i><span>
-                                          Dashboard</span></a></li>
-                        <li>
-                              <!-- <a class="has-arrow pointer"><i class="bx  ri-list-settings-line"></i>Masters</a> -->
-                              <ul class="sub-menu" aria-expanded="false">
-                                    <li>
-                                          <a routerLink="/admin/master-value"><i
-                                                      class="bx  ri-chat-settings-line"></i><span>
-                                                      Application Master</span></a>
-                                          <!-- <a routerLink="/admin/coin-master"><i class="bx ri-coins-fill"></i><span>
-                                                      Coin Master</span></a> -->
-                                          <a routerLink="/admin/email-setting">
-                                                <i class="bx ri-mail-settings-line"></i>
-                                                <span>Email Setting</span>
-                                          </a>
-                                          <a routerLink="/admin/email-template">
-                                                <i class="bx ri-mail-send-line"></i>
-                                                <span>Email Template</span>
-                                          </a>
-                                          <a routerLink="/admin/custom-message">
-                                                <i class="bx ri-message-2-line"></i>
-                                                <span>Custom Message</span>
-                                          </a>
-                                          <a routerLink="/admin/setting">
-                                                <i class="bx ri-file-settings-line"></i>
-                                                <span>Setting</span>
-                                          </a>
-                                          <a routerLink="/admin/ifsc-code"><i class="bx  ri-qr-code-line"></i><span>
-                                                      IFSC Code</span></a>
-                                    </li>
-                              </ul>
-                        </li>
-                        <li>
-                              <!-- <a class="has-arrow pointer"><i class="bx ri-group-line"></i>User Masters</a> -->
-                              <ul class="sub-menu" aria-expanded="false">
-                                    <li>
-                                          <a routerLink="/admin/user"><i class="bx ri-group-2-line"></i><span>
-                                                      User</span></a>
-                                          <a routerLink="/admin/user/permission"><i
-                                                      class="ri-user-settings-line"></i><span>
-                                                      User Permission</span></a>
-                                    </li>
-                              </ul>
-                        </li>
-                        <li><a routerLink="/admin/app-users/superadmin/11" class="is-parent"><i
-                                          class="bx ri-team-line"></i><span>
-                                          Super Users</span></a></li>
-                        <li><a routerLink="/admin/app-users" class="is-parent"><i class="bx ri-team-line"></i><span>
-                                          App Users</span></a></li>
-                        <li *ngIf="userData.roleId == 2"><a routerLink="/admin/topup-approval" class="is-parent"><i class="bx ri-money-dollar-circle-line"></i><span>
-                                          Topup Approval</span></a></li>
-                        <li *ngIf="userData.roleId == 1"><a routerLink="/user-topup" class="is-parent"><i class="bx ri-wallet-line"></i><span>
-                                          Request Topup</span></a></li>
-                        <!-- <li><a routerLink="/admin/bank-account" class="is-parent"><i class="bx ri-bank-line"></i><span>
+  <perfect-scrollbar>
+    <div id="sidebar-menu">
+      <ul class="metismenu list-unstyled" id="side-menu" #sideMenu>
+        <li>
+          <a routerLink="/admin" class="is-parent"
+            ><i class="bx ri-dashboard-line"></i><span> Dashboard</span></a
+          >
+        </li>
+        <li>
+          <!-- <a class="has-arrow pointer"><i class="bx  ri-list-settings-line"></i>Masters</a> -->
+          <ul class="sub-menu" aria-expanded="false">
+            <li>
+              <a routerLink="/admin/master-value"
+                ><i class="bx ri-chat-settings-line"></i
+                ><span> Application Master</span></a
+              >
+              <!-- <a routerLink="/admin/coin-master"><i class="bx ri-coins-fill"></i><span>
+                                                      Token Master</span></a> -->
+              <a routerLink="/admin/email-setting">
+                <i class="bx ri-mail-settings-line"></i>
+                <span>Email Setting</span>
+              </a>
+              <a routerLink="/admin/email-template">
+                <i class="bx ri-mail-send-line"></i>
+                <span>Email Template</span>
+              </a>
+              <a routerLink="/admin/custom-message">
+                <i class="bx ri-message-2-line"></i>
+                <span>Custom Message</span>
+              </a>
+              <a routerLink="/admin/setting">
+                <i class="bx ri-file-settings-line"></i>
+                <span>Setting</span>
+              </a>
+              <a routerLink="/admin/ifsc-code"
+                ><i class="bx ri-qr-code-line"></i><span> IFSC Code</span></a
+              >
+            </li>
+          </ul>
+        </li>
+        <li>
+          <!-- <a class="has-arrow pointer"><i class="bx ri-group-line"></i>User Masters</a> -->
+          <ul class="sub-menu" aria-expanded="false">
+            <li>
+              <a routerLink="/admin/user"
+                ><i class="bx ri-group-2-line"></i><span> User</span></a
+              >
+              <a routerLink="/admin/user/permission"
+                ><i class="ri-user-settings-line"></i
+                ><span> User Permission</span></a
+              >
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a routerLink="/admin/app-users/superadmin/11" class="is-parent"
+            ><i class="bx ri-team-line"></i><span> Super Users</span></a
+          >
+        </li>
+        <li>
+          <a routerLink="/admin/app-users" class="is-parent"
+            ><i class="bx ri-team-line"></i><span> App Users</span></a
+          >
+        </li>
+        <li *ngIf="userData.roleId == 2">
+          <a routerLink="/admin/topup-approval" class="is-parent"
+            ><i class="bx ri-money-dollar-circle-line"></i
+            ><span> Topup Approval</span></a
+          >
+        </li>
+        <li *ngIf="userData.roleId == 1">
+          <a routerLink="/user-topup" class="is-parent"
+            ><i class="bx ri-wallet-line"></i><span> Request Topup</span></a
+          >
+        </li>
+        <!-- <li><a routerLink="/admin/bank-account" class="is-parent"><i class="bx ri-bank-line"></i><span>
                                           Bank Accounts</span></a></li> -->
-                        <!-- <li><a routerLink="/admin/ticket" class="is-parent"><i class="bx ri-ticket-2-line"></i><span>
+        <!-- <li><a routerLink="/admin/ticket" class="is-parent"><i class="bx ri-ticket-2-line"></i><span>
                                           Ticket History</span></a></li> -->
-                        <li><a routerLink="/admin/app-users/all-trasactions" class="is-parent"><i
-                                          class="bx ri-team-line"></i><span>
-                                          All Transactions</span></a></li>
-                  </ul>
-            </div>
-      </perfect-scrollbar>
+        <li>
+          <a routerLink="/admin/app-users/all-trasactions" class="is-parent"
+            ><i class="bx ri-team-line"></i><span> All Transactions</span></a
+          >
+        </li>
+      </ul>
+    </div>
+  </perfect-scrollbar>
 </div>
