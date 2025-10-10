@@ -335,6 +335,10 @@ export class AppUserSearchComponent implements OnInit {
         wrapText: true,
         width: 150,
         cellRenderer: (data: any) => {
+          // Hide for Admin users
+          if (data.data.email === "admin@vspay.com") {
+            return "-";
+          }
           if (data.value > 0) {
             return `<span class="badge badge-warning">${data.value}</span>`;
           }
@@ -351,6 +355,10 @@ export class AppUserSearchComponent implements OnInit {
         wrapText: true,
         width: 120,
         cellRenderer: (data: any) => {
+          // Hide for Admin users
+          if (data.data.email === "admin@vspay.com") {
+            return "-";
+          }
           if (data.value) {
             return '<span class="badge badge-danger">Yes</span>';
           }

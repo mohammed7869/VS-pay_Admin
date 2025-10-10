@@ -61,7 +61,13 @@
                 {{ getStatusText(transaction.status) }}
               </span>
             </td>
-            <td *ngIf="transaction.status === 2 && transaction.txnType === 2">
+            <td
+              *ngIf="
+                transaction.status === 2 &&
+                transaction.txnType === 2 &&
+                user.roleId !== 2
+              "
+            >
               <button
                 class="btn btn-success btn-sm mr-2"
                 (click)="approveTopUp(transaction.id)"
@@ -76,7 +82,13 @@
               </button>
             </td>
             <td
-              *ngIf="!(transaction.status === 2 && transaction.txnType === 2)"
+              *ngIf="
+                !(
+                  transaction.status === 2 &&
+                  transaction.txnType === 2 &&
+                  user.roleId !== 2
+                )
+              "
             >
               <!-- Empty cell for non-pending topup transactions -->
             </td>
