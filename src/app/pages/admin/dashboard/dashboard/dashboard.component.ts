@@ -20,6 +20,10 @@ export class DashboardComponent implements OnInit {
   userData: any = {};
   isDataLoaded: boolean = false;
   applicationPeriodList: any = [];
+  totalUsers: number = 0;
+  walletBalance: number = 0;
+  unlockedBalance: number = 0;
+  lockedBalance: number = 0;
   constructor(
     private fb: FormBuilder,
     private commonService: CommonService,
@@ -41,11 +45,24 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void { }
 
   get() {
+    const userId = this.getUserId();
     this.commonService
-      .adminDashboardResult()
+      .getUserDetail({ userId })
       .subscribe(
         data => {
-          this.recordData = data.data;
+          this.walletBalance = data.walletBalance || 0;
+          this.unlockedBalance = data.unlocked || 0;
+          this.lockedBalance = data.locked || 0;
+        },
+        error => {
+          this.toastrMessageService.showInfo(error.error.message, "Info");
+        });
+
+    this.commonService
+      .getUserList({ searchText: '', roleId: null, pendingFilter: null })
+      .subscribe(
+        data => {
+          this.totalUsers = Array.isArray(data) ? data.length : 0;
         },
         error => {
           this.toastrMessageService.showInfo(error.error.message, "Info");
@@ -104,5 +121,18 @@ export class DashboardComponent implements OnInit {
     item = item == 'null' ? null : item;
     this.form.patchValue({ periodId: item });
     this.getApplicationList();
+  }
+
+  private getUserId(): number {
+    return this.userData?.userId || this.userData?.id || 11;
+  }
+
+  onTotalUsersClick() {
+    this.router.navigate(['/admin/app-users']);
+  }
+
+  onWalletCardsClick() {
+    const userId = this.getUserId();
+    this.router.navigate(['/admin/app-users/superadmin', userId]);
   }
 }

@@ -1,0 +1,78 @@
+<div class="page-title-box d-flex align-items-center justify-content-between mr-4 ml-4">
+    <h4 class="mb-0">Transaction History</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0 align-items-center">
+            <li class="breadcrumb-item button-items">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-primary d-flex align-items-center mr-2 shadow-sm"
+                        [class.btn-warning]="showFilters" [class.btn-primary]="!showFilters" type="button"
+                        (click)="showFilters = !showFilters" title="Filter Transactions"
+                        data-bs-toggle="tooltip" data-bs-placement="top">
+                        <i class="ri-filter-3-line mr-1"></i>
+                        <span class="d-none d-sm-inline">Filters</span>
+                    </button>
+                    <button class="btn btn-success d-flex align-items-center shadow-sm" type="button"
+                        (click)="submitItemExportToExcel(1)" title="Export to Excel"
+                        data-bs-toggle="tooltip" data-bs-placement="top">
+                        <i class="ri-file-excel-2-line mr-1"></i>
+                        <span class="d-none d-sm-inline">Export</span>
+                    </button>
+                </div>
+            </li>
+            <li class="breadcrumb-item"><a href="javascript: void(0);">Transaction History</a> </li>
+        </ol>
+    </div>
+</div>
+<div class="row" *ngIf="showFilters">
+    <div class="col-12">
+        <div class="card card-body">
+            <form [formGroup]="form" (ngSubmit)="submitSearch()">
+                <div class="row g-2 mb-2">
+                    <div class="col-md-3">
+                        <div class="form-label-group">
+                            <input type="date" class="form-control" formControlName="fromDate">
+                            <label class="form-label">From Date</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-label-group">
+                            <input type="date" class="form-control" formControlName="toDate">
+                            <label class="form-label">To Date</label>
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-3">
+                        <div class="form-label-group">
+                            <input type="number" class="form-control" formControlName="userId"
+                                placeholder="User ID">
+                            <label class="form-label">User ID</label>
+                        </div>
+                    </div> -->
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-primary mr-2" [disabled]="isBtnLoading">
+                            <span *ngIf="isBtnLoading" class="spinner-border spinner-border-sm me-1"
+                                role="status" aria-hidden="true"></span>
+                            <i *ngIf="!isBtnLoading" class="ri-check-line mr-1"></i>
+                            Apply
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" (click)="clear()">
+                            <i class="ri-close-circle-line mr-1"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div [ngStyle]="gridHeightWidth" class="mb-2">
+            <ag-grid-angular style="width: 100%; height:100%;" class="ag-theme-alpine" [rowData]="filteredLst"
+                [rowHeight]="appCommon.GridRowHeight" [columnDefs]="columnDefs" (gridReady)="onGridReady($event)"
+                [animateRows]="true">
+            </ag-grid-angular>
+        </div>
+    </div>
+</div>
+
+

@@ -1,63 +1,45 @@
 <div class="row">
     <div class="col-md-3">
-        <div class="card box bg-success text-white-50 text-center">
+        <div class="card bg-info text-light text-center" role="button" style="cursor: pointer;" (click)="onTotalUsersClick()">
             <div class="card-body">
-                <a (click)="onNonItsUserClick()" class="pointer">
-                    <h5 class="text-white">
-                        <p>Total Admin User<i class="ri-user-line float-right"></i></p>
-                        <small>{{recordData.totalNonItsUser  || 0}}</small>
-                    </h5>
-                </a>
+                <h5 class="text-white">
+                    <p class="mb-1">Total Application User</p>
+                    <small>{{totalUsers || 0}}</small>
+                </h5>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card box bg-info text-light text-center">
+        <div class="card bg-success text-white text-center" role="button" style="cursor: pointer;" (click)="onWalletCardsClick()">
             <div class="card-body">
-                <a routerLink="/admin/application">
-                    <h5 class="text-white">
-                        <p>Total Application User<i class="ri-contacts-book-line float-right"></i></p>
-                        <small>{{recordData.totalApplication || 0}}</small>
-                    </h5>
-                </a>
+                <h5 class="text-white">
+                    <p class="mb-1">Wallet Balance</p>
+                    <small>{{walletBalance | number:'1.2-2'}}</small>
+                </h5>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card box bg-primary text-light text-center">
+        <div class="card bg-primary text-white text-center" role="button" style="cursor: pointer;" (click)="onWalletCardsClick()">
             <div class="card-body">
-                <a routerLink="/admin/ticket">
-                    <h5 class="text-white">
-                        <p>Total App Downloads<i class="ri-ticket-2-line float-right"></i></p>
-                        <small>{{recordData.totalTicketRaised || 0}}</small>
-                    </h5>
-                </a>
+                <h5 class="text-white">
+                    <p class="mb-1">Unlocked Balance</p>
+                    <small>{{unlockedBalance | number:'1.2-2'}}</small>
+                </h5>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card box bg-warning text-light text-center">
+        <div class="card bg-warning text-white text-center" role="button" style="cursor: pointer;" (click)="onWalletCardsClick()">
             <div class="card-body">
-                <a routerLink="/admin/user">
-                    <h5 class="text-white">
-                        <p>Total Admin User<i class="ri-team-line float-right"></i></p>
-                        <small>{{recordData.totalAdminUser || 0}}</small>
-                    </h5>
-                </a>
+                <h5 class="text-white">
+                    <p class="mb-1">Locked Balance</p>
+                    <small>{{lockedBalance | number:'1.2-2'}}</small>
+                </h5>
             </div>
         </div>
     </div>
 </div>
-<style>
-    .box:hover {
-        transform: scale(1.1);
-        border: 3px solid #80cf2a;
-    }
-
-    .box {
-        transition: transform.5s;
-    }
-</style>

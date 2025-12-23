@@ -51,4 +51,12 @@ export class CommonService {
   getCoinTransferDetails(data): Observable<any> {
     return this.httpClient.post(`${environment.apiUrl}/coinlog/admin/getCoinTransferDetails`, data);
   }
+
+  getUserDetail(data): Observable<any> {
+    return this.httpClient.post(`${environment.apiUrl}/user/admin/getUserDetail`, data);
+  }
+
+  getUserList(data): Observable<any> {
+    return this.httpClient.post(`${environment.apiUrl}/user/list`, data);
+  }
 }

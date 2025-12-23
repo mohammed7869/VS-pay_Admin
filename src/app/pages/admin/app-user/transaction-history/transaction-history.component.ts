@@ -1,50 +1,55 @@
-import { Component, HostListener, OnInit, TemplateRef } from "@angular/core";
+import { Component, HostListener, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { FormBuilder, FormGroup } from "@angular/forms";
 import { ColDef } from "ag-grid-community";
 import * as moment from "moment";
+import { formatDate } from "@angular/common";
 import { appCommon } from "src/app/common/_appCommon";
 import { CommonService } from "src/app/providers/services/common.service";
 import { ToastrMessageService } from "src/app/providers/services/toastr-message.service";
-import { UserService } from "src/app/providers/services/user.service";
 import { xlsxCommon } from "src/app/common/xlsx_common";
 
 @Component({
-  selector: "app-super-admin-user-details-component",
-  templateUrl: "./super-admin-user-details-component.component.html",
-  styleUrls: ["./super-admin-user-details-component.component.scss"],
+  selector: "app-transaction-history",
+  templateUrl: "./transaction-history.component.html",
+  styleUrls: ["./transaction-history.component.scss"],
 })
-export class SuperAdminUserDetailsComponentComponent implements OnInit {
-  lst: any = [];
-  coinLoglst: any = [];
-  user: any = {};
-  userId: any;
-  modalTitle: string = "";
-  lockUnlockAmount: number;
-  transferAmount: number;
-  fromUnlockedToLocked: boolean;
-  lockUnlockType: "lock" | "unlock" = "lock";
-  public appCommon = appCommon;
-  selectedTab: number = 1;
+export class TransactionHistoryComponent implements OnInit {
   gridApi: any;
   columnDefs: ColDef[];
-  gridApiCoin: any;
-  columnDefsCoin: ColDef[];
+  lst: any = [];
+  filteredLst: any = [];
   gridHeightWidth: any = {};
+  public appCommon = appCommon;
+  form: FormGroup;
+  showFilters: boolean = false;
+  isBtnLoading: boolean = false;
+  submitted: boolean = false;
+  userId: any;
+
   constructor(
-    private _service: UserService,
     private toastrMessageService: ToastrMessageService,
-    private route: ActivatedRoute,
     private commonService: CommonService,
-    private modalService: NgbModal
-  ) {}
+    private fb: FormBuilder,
+    private route: ActivatedRoute
+  ) {
+    this.createSearchForm();
+  }
 
   ngOnInit(): void {
-    if (this.route.snapshot.params.id) {
-      this.userId = this.route.snapshot.params.id;
-      this.getData();
+    // Extract userId from route parameter if available
+    if (this.route.snapshot.params.userId) {
+      this.userId = this.route.snapshot.params.userId;
+      // Set userId in form and disable it since it comes from route
+      this.form.patchValue({ userId: this.userId });
+      this.form.get('userId')?.disable();
+    } else {
+      // Default to userId 11 when opened directly
+      this.userId = this.form.getRawValue().userId || 11;
+      this.form.patchValue({ userId: this.userId });
     }
     this.setGridHeight();
+    this.search();
   }
 
   @HostListener("window:resize", ["$event"])
@@ -61,22 +66,193 @@ export class SuperAdminUserDetailsComponentComponent implements OnInit {
     };
   }
 
-  getData() {
-    this.get();
-    this.search();
-    this.searchCoinLog();
+  createSearchForm(): void {
+    this.form = this.fb.group({
+      fromDate: [null],
+      toDate: [null],
+      userId: [{value: 11, disabled: false}],
+    });
   }
 
-  get() {
-    var fdata = { userId: this.userId };
-    this._service.getUserDetail(fdata).subscribe(
+  search() {
+    this.isBtnLoading = true;
+    const payload: any = {};
+    
+    // Use userId from route parameter if available, otherwise use form value
+    // Use getRawValue() to get disabled field values
+    const userIdToUse = this.userId || this.form.getRawValue().userId;
+    if (userIdToUse) {
+      payload.userId = userIdToUse;
+    }
+
+    this.commonService.listtransaction(payload).subscribe(
       (data) => {
-        this.user = data;
+        this.isBtnLoading = false;
+        // Sort transactions by transactionDate in descending order (most recent first)
+        this.lst = data.sort((a: any, b: any) => {
+          return (
+            new Date(b.transactionDate).getTime() -
+            new Date(a.transactionDate).getTime()
+          );
+        });
+        this.applyDateFilter();
       },
       (error) => {
-        this.toastrMessageService.showInfo(error.error.message, "Info");
+        this.isBtnLoading = false;
+        this.toastrMessageService.showInfo(error.error?.message || "Error loading transactions", "Info");
+        this.lst = [];
+        this.filteredLst = [];
       }
     );
+  }
+
+  applyDateFilter() {
+    const fromDate = this.form.value.fromDate;
+    const toDate = this.form.value.toDate;
+
+    if (!fromDate && !toDate) {
+      this.filteredLst = this.lst;
+      return;
+    }
+
+    this.filteredLst = this.lst.filter((transaction: any) => {
+      const transactionDate = new Date(transaction.transactionDate);
+      
+      if (fromDate && toDate) {
+        const from = new Date(fromDate);
+        from.setHours(0, 0, 0, 0);
+        const to = new Date(toDate);
+        to.setHours(23, 59, 59, 999);
+        return transactionDate >= from && transactionDate <= to;
+      } else if (fromDate) {
+        const from = new Date(fromDate);
+        from.setHours(0, 0, 0, 0);
+        return transactionDate >= from;
+      } else if (toDate) {
+        const to = new Date(toDate);
+        to.setHours(23, 59, 59, 999);
+        return transactionDate <= to;
+      }
+      
+      return true;
+    });
+  }
+
+  submitSearch() {
+    this.submitted = true;
+    this.applyDateFilter();
+    if (this.filteredLst.length === 0 && (this.form.value.fromDate || this.form.value.toDate)) {
+      this.toastrMessageService.showInfo("No transactions found for the selected date range", "Info");
+    }
+  }
+
+  clear() {
+    this.submitted = false;
+    this.form.patchValue({
+      fromDate: null,
+      toDate: null,
+      userId: null,
+    });
+    this.filteredLst = this.lst;
+  }
+
+  submitItemExportToExcel(type: number) {
+    const dataToExport = this.filteredLst && this.filteredLst.length > 0 ? this.filteredLst : this.lst;
+    
+    if (!dataToExport || dataToExport.length === 0) {
+      this.toastrMessageService.showWarning(
+        "No data available to export",
+        "Warning"
+      );
+      return;
+    }
+
+    try {
+      // Prepare headers
+      const headers = [
+        "ID",
+        "Transaction Date",
+        // "User ID",
+        "Amount",
+        "Type",
+        "Description",
+        "Recipient",
+        "Transaction Type",
+        "Status",
+        // "Payment Status",
+        // "Unlocked",
+      ];
+
+      // Transform transaction data to array of arrays
+      const data = dataToExport.map((transaction: any) => {
+        // Format transaction date
+        const transactionDate = transaction.transactionDate
+          ? moment(transaction.transactionDate).format("DD/MM/YYYY hh:mm A")
+          : "";
+
+        // Format type (isCr)
+        const type = transaction.isCr === true ? "Paid" : transaction.isCr === false ? "Received" : "";
+
+        // Format recipient
+        const recipientFullName = transaction.recipientFullName || "";
+        const recipientMobileNo = transaction.recipientMobileNo || "";
+        const recipient = recipientMobileNo
+          ? `${recipientFullName} (${recipientMobileNo})`
+          : `${recipientFullName} (Self)`;
+
+        // Format transaction type
+        const txnType = transaction.txnType
+          ? appCommon.EnTransactionTypeObjByte[transaction.txnType] || ""
+          : "";
+
+        // Format status
+        const status = transaction.status
+          ? appCommon.EnApplicationStatusForUserObj[transaction.status] || ""
+          : "";
+
+        return [
+          transaction.id || "",
+          transactionDate,
+          // transaction.userId || "",
+          transaction.amount || "",
+          type,
+          transaction.description || "",
+          recipient,
+          txnType,
+          status,
+          // transaction.paymentStatus || "",
+          // transaction.unlocked || "",
+        ];
+      });
+
+      // Add headers as first row
+      data.unshift(headers);
+
+      // Generate filename with current date
+      const currentDate = moment().format("YYYY-MM-DD");
+      const filename = `Transaction_History_${currentDate}.xlsx`;
+
+      // Prepare export options
+      const exportOptions = {
+        data: data,
+        sheetName: "Transaction History",
+        filename: filename,
+      };
+
+      // Export to Excel
+      xlsxCommon.data2xlsx(exportOptions);
+
+      this.toastrMessageService.showSuccess(
+        "Transaction data exported successfully",
+        "Success"
+      );
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
+      this.toastrMessageService.showError(
+        "Error exporting transaction data",
+        "Error"
+      );
+    }
   }
 
   getArrowIcon(isCr: boolean): string {
@@ -97,185 +273,17 @@ export class SuperAdminUserDetailsComponentComponent implements OnInit {
     return `${recipientFullName} (${recipientMobileNo})`;
   }
 
-  search() {
-    var fdata = { userId: this.userId };
-    this.commonService.listtransaction(fdata).subscribe(
-      (data) => {
-        // Sort transactions by transactionDate in descending order (most recent first)
-        this.lst = data.sort((a: any, b: any) => {
-          return (
-            new Date(b.transactionDate).getTime() -
-            new Date(a.transactionDate).getTime()
-          );
-        });
-      },
-      (error) => {
-        this.toastrMessageService.showInfo(error.error.message, "Info");
-      }
-    );
-  }
-
-  searchCoinLog() {
-    var fdata = { userId: this.userId };
-    this.commonService.getCoinTransferDetails(fdata).subscribe(
-      (data) => {
-        // Sort coin log by transferDate in descending order (most recent first)
-        this.coinLoglst = data.sort((a: any, b: any) => {
-          return (
-            new Date(b.transferDate).getTime() -
-            new Date(a.transferDate).getTime()
-          );
-        });
-      },
-      (error) => {
-        this.toastrMessageService.showInfo(error.error.message, "Info");
-      }
-    );
-  }
-
-  openLockUnlockModal(content: TemplateRef<any>, type: "lock" | "unlock") {
-    this.lockUnlockType = type;
-    this.modalTitle = type === "lock" ? "Add Lock Tokens" : "Add Unlock Tokens";
-    this.modalService.open(content, { centered: true });
-  }
-
-  submitLockUnlockForm() {
-    const requestData = {
-      unlocked: this.lockUnlockType === "unlock" ? this.lockUnlockAmount : 0,
-      locked: this.lockUnlockType === "lock" ? this.lockUnlockAmount : 0,
-    };
-
-    this.commonService.lockUnlockCoins(requestData).subscribe(
-      (response) => {
-        this.toastrMessageService.showSuccess(
-          "Tokens updated successfully",
-          "Success"
-        );
-        this.modalService.dismissAll();
-        this.getData();
-      },
-      (error) => {
-        this.toastrMessageService.showError(error.error.message, "Error");
-      }
-    );
-  }
-
-  submittransferCoins() {
-    const requestData = {
-      amount: this.transferAmount,
-      fromUnlockedToLocked: this.fromUnlockedToLocked,
-    };
-
-    this._service.transferCoins(requestData).subscribe(
-      (response) => {
-        this.toastrMessageService.showSuccess(
-          "Tokens transferred successfully",
-          "Success"
-        );
-        this.modalService.dismissAll();
-        this.getData();
-      },
-      (error) => {
-        this.toastrMessageService.showError(error.error.message, "Error");
-      }
-    );
-  }
-
-  onTabChanged(event: any) {
-    this.selectedTab = event;
-  }
-
-  submitItemExportToExcel() {
-    if (!this.lst || this.lst.length === 0) {
-      this.toastrMessageService.showWarning(
-        "No data available to export",
-        "Warning"
-      );
-      return;
-    }
-
-    try {
-      const headers = [
-        "ID",
-        "Transaction Date",
-        "Amount",
-        "Type",
-        "Description",
-        "Recipient",
-        "Transaction Type",
-        "Status",
-        // "Payment Status",
-        // "Unlocked",
-      ];
-
-      const data = this.lst.map((transaction: any) => {
-        const transactionDate = transaction.transactionDate
-          ? moment(transaction.transactionDate).format("DD/MM/YYYY hh:mm A")
-          : "";
-
-        const type =
-          transaction.isCr === false
-            ? "Paid"
-            : transaction.isCr === true
-            ? "Received"
-            : "";
-
-        const recipientFullName = transaction.recipientFullName || "";
-        const recipientMobileNo = transaction.recipientMobileNo || "";
-        const recipient = recipientMobileNo
-          ? `${recipientFullName} (${recipientMobileNo})`
-          : `${recipientFullName} (Self)`;
-
-        const txnType = transaction.txnType
-          ? appCommon.EnTransactionTypeObjByte[transaction.txnType] || ""
-          : "";
-
-        const status = transaction.status
-          ? appCommon.EnApplicationStatusForUserObj[transaction.status] || ""
-          : "";
-
-        return [
-          transaction.id || "",
-          transactionDate,
-          transaction.amount || "",
-          type,
-          transaction.description || "",
-          recipient,
-          txnType,
-          status,
-          // transaction.paymentStatus || "",
-          // transaction.unlocked || "",
-        ];
-      });
-
-      data.unshift(headers);
-      const currentDate = moment().format("YYYY-MM-DD");
-      const filename = `Transaction_History_${currentDate}.xlsx`;
-
-      const exportOptions = {
-        data: data,
-        sheetName: "Transaction History",
-        filename: filename,
-      };
-
-      xlsxCommon.data2xlsx(exportOptions);
-
-      this.toastrMessageService.showSuccess(
-        "Transaction data exported successfully",
-        "Success"
-      );
-    } catch (error) {
-      console.error("Error exporting to Excel:", error);
-      this.toastrMessageService.showError(
-        "Error exporting transaction data",
-        "Error"
-      );
-    }
-  }
-
   onGridReady(params: any) {
     this.gridApi = params.api;
     this.columnDefs = [
+      {
+        field: "id",
+        headerName: "ID",
+        sortable: true,
+        filter: true,
+        resizable: true,
+        width: 50,
+      },
       {
         field: "transactionDate",
         headerName: "Date",
@@ -290,6 +298,14 @@ export class SuperAdminUserDetailsComponentComponent implements OnInit {
           return moment(params.value).format("DD/MM/YYYY " + "hh:mm A");
         },
       },
+      // {
+      //   field: "userId",
+      //   headerName: "User ID",
+      //   sortable: true,
+      //   filter: true,
+      //   resizable: true,
+      //   width: 80,
+      // },
       {
         field: "amount",
         headerName: "Amount",
@@ -338,7 +354,7 @@ export class SuperAdminUserDetailsComponentComponent implements OnInit {
       },
       {
         field: "txnType",
-        headerName: "Type",
+        headerName: "Transaction Type",
         sortable: true,
         autoHeight: true,
         filter: true,
@@ -362,59 +378,28 @@ export class SuperAdminUserDetailsComponentComponent implements OnInit {
           return appCommon.EnApplicationStatusForUserObj[params.value];
         },
       },
-    ];
-  }
-
-  onCoinGridReady(params: any) {
-    this.gridApiCoin = params.api;
-    this.columnDefsCoin = [
       {
-        field: "transferDate",
-        headerName: "Date",
+        field: "paymentStatus",
+        headerName: "Payment Status",
         sortable: true,
-        filter: true,
-        wrapText: true,
         autoHeight: true,
+        filter: true,
         resizable: true,
+        wrapText: true,
         width: 150,
-        sort: "desc",
-        valueFormatter: function (params) {
-          return moment(params.value).format("DD/MM/YYYY " + "hh:mm A");
-        },
       },
       {
-        field: "amount",
-        headerName: "Amount",
+        field: "approvalRefNo",
+        headerName: "Approval Ref No",
         sortable: true,
         autoHeight: true,
         filter: true,
         resizable: true,
         wrapText: true,
-        width: 80,
-      },
-      {
-        field: "description",
-        headerName: "Description",
-        sortable: true,
-        autoHeight: true,
-        filter: true,
-        resizable: true,
-        wrapText: true,
-        width: 250,
-      },
-      {
-        field: "transferType",
-        headerName: "Type",
-        sortable: true,
-        autoHeight: true,
-        filter: true,
-        resizable: true,
-        wrapText: true,
-        width: 250,
-        valueFormatter: function (params) {
-          return appCommon.EnAdminCoinTransferTypeObjByte[params.value];
-        },
+        width: 150,
       },
     ];
   }
 }
+
+

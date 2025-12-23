@@ -74,6 +74,7 @@
     "sweetalert2": "^9.15.1",
     "tslib": "^2.0.0",
     "xlsx": "^0.18.5",
+    "xlsx-js-style": "^1.2.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

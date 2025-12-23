@@ -11,13 +11,15 @@ import { AppUserDetailsComponent } from './app-user-details/app-user-details.com
 import { AppUserResolver } from 'src/app/providers/resolver/app-user.resolver';
 import { SuperAdminUserDetailsComponentComponent } from './super-admin-user-details-component/super-admin-user-details-component.component';
 import { AppUserAllTrasactionComponent } from './app-user-all-trasaction/app-user-all-trasaction.component';
+import { TransactionHistoryComponent } from './transaction-history/transaction-history.component';
 
 @NgModule({
   declarations: [
     AppUserSearchComponent,
     AppUserDetailsComponent,
     SuperAdminUserDetailsComponentComponent,
-    AppUserAllTrasactionComponent
+    AppUserAllTrasactionComponent,
+    TransactionHistoryComponent
   ],
   imports: [
     ReactiveFormsModule,
@@ -26,6 +28,18 @@ import { AppUserAllTrasactionComponent } from './app-user-all-trasaction/app-use
     CommonModule,
     SharedModuleCommon,
     RouterModule.forChild([
+      {
+        path: 'transaction-history/:userId',
+        component: TransactionHistoryComponent,       
+      },
+      {
+        path: 'transaction-history',
+        component: TransactionHistoryComponent,       
+      },
+      {
+        path: 'all-trasactions',
+        component: AppUserAllTrasactionComponent,       
+      },
       {
         path: '',
         component: AppUserSearchComponent,
@@ -46,10 +60,6 @@ import { AppUserAllTrasactionComponent } from './app-user-all-trasaction/app-use
             component: SuperAdminUserDetailsComponentComponent,
           }
         ]
-      },
-      {
-        path: 'all-trasactions',
-        component: AppUserAllTrasactionComponent,       
       },
     ]),
     AgGridModule,

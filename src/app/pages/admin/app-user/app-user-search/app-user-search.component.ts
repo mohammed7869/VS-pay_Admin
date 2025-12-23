@@ -122,6 +122,13 @@ export class AppUserSearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Check if we're in transaction-history context and redirect to the correct route
+    const currentUrl = this.router.url;
+    if (currentUrl === '/admin/transaction-history' || currentUrl === '/admin/transaction-history/') {
+      this.router.navigate(['admin/app-users/transaction-history'], { replaceUrl: true });
+      return;
+    }
+    
     this.setGridHeight();
     this.createSearchForm();
     this.search();

@@ -56,6 +56,11 @@ const routes: Routes = [
     loadChildren: () => import('./app-user/app-user.module').then((m) => m.AppUserModule)
   },
   {
+    path: 'transaction-history',
+    redirectTo: 'app-users/transaction-history',
+    pathMatch: 'full'
+  },
+  {
     path: 'topup-approval',
     loadChildren: () => import('./topup-approval/topup-approval.module').then((m) => m.TopupApprovalModule)
   },
